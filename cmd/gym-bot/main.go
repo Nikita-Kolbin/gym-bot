@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"gym-bot/internal/client"
 	"gym-bot/internal/events/fetcher"
 	"log"
@@ -13,18 +12,11 @@ func main() {
 	// В процессе разработки используется переменная
 	// окружения, в релизе будет флаг консоли
 	c := client.New(os.Getenv("TG_BOT_TOKEN"))
-	_ = c
 
 	// TODO: storage
 
 	f := fetcher.New(c)
-
-	for {
-		e, _ := f.Fetch(10)
-		if len(e) > 0 {
-			fmt.Printf("%+v\n", e)
-		}
-	}
+	_ = f
 
 	// TODO: processor
 
