@@ -2,25 +2,32 @@ package main
 
 import (
 	"flag"
-	"gym-bot/internal/client"
-	"gym-bot/internal/events/fetcher"
+	"gym-bot/internal/consumer/eventConsumer"
 	"log"
 	"os"
+
+	tgClient "gym-bot/internal/client"
+	eventFetcher "gym-bot/internal/events/fetcher"
+	eventProcessor "gym-bot/internal/events/processor"
+	"gym-bot/internal/storage/storageMock"
 )
 
 func main() {
 	// В процессе разработки используется переменная
 	// окружения, в релизе будет флаг консоли
-	c := client.New(os.Getenv("TG_BOT_TOKEN"))
+	client := tgClient.New(os.Getenv("TG_BOT_TOKEN"))
 
-	// TODO: storage
+	fetcher := eventFetcher.New(client)
 
-	f := fetcher.New(c)
-	_ = f
+	sMock := storageMock.New()
 
-	// TODO: processor
+	processor := eventProcessor.New(client, sMock)
 
-	// TODO: consumer
+	consumer := eventConsumer.New(fetcher, processor, 100)
+
+	if err := consumer.Start(); err != nil {
+		log.Fatal("service is stopped", err)
+	}
 }
 
 func mustToken() string {

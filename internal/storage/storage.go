@@ -1,4 +1,5 @@
 package storage
 
-type Storage struct {
+type Storage interface {
+	Foo()
 }

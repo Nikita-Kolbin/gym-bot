@@ -10,7 +10,7 @@ import (
 
 type Processor struct {
 	client  *client.Client
-	storage *storage.Storage
+	storage storage.Storage
 }
 
 var (
@@ -18,7 +18,7 @@ var (
 	ErrUnknownMetaType  = errors.New("unknown meta type")
 )
 
-func New(client *client.Client, storage *storage.Storage) *Processor {
+func New(client *client.Client, storage storage.Storage) *Processor {
 	return &Processor{
 		client:  client,
 		storage: storage,
