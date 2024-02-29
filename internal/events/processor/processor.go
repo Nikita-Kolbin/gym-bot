@@ -6,6 +6,7 @@ import (
 	"gym-bot/internal/client"
 	"gym-bot/internal/events"
 	"gym-bot/internal/storage"
+	"strings"
 )
 
 type Processor struct {
@@ -39,13 +40,21 @@ func (p *Processor) processMessage(event events.Event) error {
 	if err != nil {
 		return fmt.Errorf("can't process message: %w", err)
 	}
-	chatID, text := meta.ChatID, meta.Text
+
+	chatID := meta.ChatID
+	text := strings.TrimSpace(meta.Text)
+	username := meta.Username
+
+	if text[0] == '/' {
+		if err = p.doCmd(text, chatID, username); err != nil {
+			return fmt.Errorf("can't do command: %w", err)
+		}
+		return nil
+	}
 
 	if p.client.SendMessage(chatID, text) != nil {
 		return fmt.Errorf("can't send message: %w", err)
 	}
-
-	// TODO: add logic process message
 
 	return nil
 }
