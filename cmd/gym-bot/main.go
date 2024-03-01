@@ -2,31 +2,40 @@ package main
 
 import (
 	"flag"
-	"gym-bot/internal/consumer/eventConsumer"
+	"gym-bot/internal/storage/sqlite"
 	"log"
-	"os"
+)
 
-	tgClient "gym-bot/internal/client"
-	eventFetcher "gym-bot/internal/events/fetcher"
-	eventProcessor "gym-bot/internal/events/processor"
-	"gym-bot/internal/storage/storageMock"
+const (
+	sqliteStoragePath = "data/sqlite/storage.db"
+	batchSize         = 100
 )
 
 func main() {
 	// В процессе разработки используется переменная
 	// окружения, в релизе будет флаг консоли
-	client := tgClient.New(os.Getenv("TG_BOT_TOKEN"))
+	//client := tgClient.New(os.Getenv("TG_BOT_TOKEN"))
+	//
+	//fetcher := eventFetcher.New(client)
+	//
+	//sMock := storageMock.New()
+	//
+	//processor := eventProcessor.New(client, sMock)
+	//
+	//consumer := eventConsumer.New(fetcher, processor, batchSize)
+	//
+	//if err := consumer.Start(); err != nil {
+	//	log.Fatal("service is stopped", err)
+	//}
 
-	fetcher := eventFetcher.New(client)
+	s, err := sqlite.New(sqliteStoragePath)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	sMock := storageMock.New()
-
-	processor := eventProcessor.New(client, sMock)
-
-	consumer := eventConsumer.New(fetcher, processor, 100)
-
-	if err := consumer.Start(); err != nil {
-		log.Fatal("service is stopped", err)
+	err = s.Init()
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
