@@ -2,20 +2,26 @@ package processor
 
 import (
 	"log"
+	"strings"
 )
 
 const (
+	StartCmd = "/start"
 	HelpCmd  = "/help"
-	HelloCmd = "/hello"
 )
 
 func (p *Processor) doCmd(text string, chatID int, username string) error {
+	text = strings.ToLower(text)
+
 	log.Printf("got new command %s from %s", text, username)
 
 	switch text {
 	case HelpCmd:
 		return p.sendHelp(chatID)
-	case HelloCmd:
+	case StartCmd:
+		if err := p.storage.CreateUser(username); err != nil {
+			return err
+		}
 		return p.sendHello(chatID)
 	default:
 		return p.sendUnknownCommand(chatID)

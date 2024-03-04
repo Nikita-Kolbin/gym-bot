@@ -1,5 +1,5 @@
 package storage
 
 type Storage interface {
-	Foo()
+	CreateUser(username string) error
 }
