@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"gym-bot/internal/storage/sqlite"
 	"log"
 	"os"
 
@@ -10,6 +9,7 @@ import (
 	"gym-bot/internal/consumer/eventConsumer"
 	eventFetcher "gym-bot/internal/events/fetcher"
 	eventProcessor "gym-bot/internal/events/processor"
+	"gym-bot/internal/storage/sqlite"
 )
 
 const (
@@ -27,6 +27,9 @@ func main() {
 	storage, err := sqlite.New(sqliteStoragePath)
 	if err != nil {
 		log.Fatal("can't open storage", err)
+	}
+	if storage.Init() != nil {
+		log.Fatal("can't init storage", err)
 	}
 
 	processor := eventProcessor.New(client, storage)

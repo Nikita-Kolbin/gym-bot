@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"path"
@@ -60,6 +61,21 @@ func (c *Client) SendMessage(chatID int, text string) error {
 
 	if _, err := c.doRequest(sendMessageMethod, q); err != nil {
 		return fmt.Errorf("can't send message: %w", err)
+	}
+
+	return nil
+}
+
+func (c *Client) SendReplyKeyboardMarkup(chatID int, jsonKeyboard string) error {
+	q := url.Values{}
+	q.Add("chat_id", strconv.Itoa(chatID))
+	q.Add("text", "aaa")
+	q.Add("reply_markup", jsonKeyboard)
+
+	resp, err := c.doRequest(sendMessageMethod, q)
+	log.Println("client.SendReplyKeyboardMarkup response:", string(resp))
+	if err != nil {
+		return fmt.Errorf("can't send keyboard: %w", err)
 	}
 
 	return nil
