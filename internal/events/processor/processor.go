@@ -49,11 +49,10 @@ func (p *Processor) processMessage(event events.Event) error {
 		if err = p.doCmd(text, chatID, username); err != nil {
 			return fmt.Errorf("can't do command: %w", err)
 		}
-		return nil
-	}
-
-	if p.client.SendMessage(chatID, text) != nil {
-		return fmt.Errorf("can't send message: %w", err)
+	} else {
+		if err = p.handleMsg(text, chatID, username); err != nil {
+			return fmt.Errorf("can't handle message: %w", err)
+		}
 	}
 
 	return nil

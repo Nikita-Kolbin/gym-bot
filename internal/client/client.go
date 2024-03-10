@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"path"
@@ -72,9 +71,7 @@ func (c *Client) SendReplyKeyboardMarkup(chatID int, jsonKeyboard string) error 
 	q.Add("text", "aaa")
 	q.Add("reply_markup", jsonKeyboard)
 
-	resp, err := c.doRequest(sendMessageMethod, q)
-	log.Println("client.SendReplyKeyboardMarkup response:", string(resp))
-	if err != nil {
+	if _, err := c.doRequest(sendMessageMethod, q); err != nil {
 		return fmt.Errorf("can't send keyboard: %w", err)
 	}
 
