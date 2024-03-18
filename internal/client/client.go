@@ -65,10 +65,10 @@ func (c *Client) SendMessage(chatID int, text string) error {
 	return nil
 }
 
-func (c *Client) SendReplyKeyboardMarkup(chatID int, jsonKeyboard string) error {
+func (c *Client) SendReplyKeyboardMarkup(chatID int, jsonKeyboard, text string) error {
 	q := url.Values{}
 	q.Add("chat_id", strconv.Itoa(chatID))
-	q.Add("text", "aaa")
+	q.Add("text", text)
 	q.Add("reply_markup", jsonKeyboard)
 
 	if _, err := c.doRequest(sendMessageMethod, q); err != nil {

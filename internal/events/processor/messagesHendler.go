@@ -14,6 +14,8 @@ func (p *Processor) handleMsg(text string, chatID int, username string) error {
 	switch state {
 	case storage.Standard:
 		return p.handleStandardState(text, chatID, username)
+	case storage.PickCreate:
+		return p.handlePickCreate(text, chatID, username)
 	case storage.CreateGroup:
 		return p.handleCrateGroupState(text, chatID, username)
 	default:
@@ -25,12 +27,36 @@ func (p *Processor) handleMsg(text string, chatID int, username string) error {
 
 func (p *Processor) handleStandardState(text string, chatID int, username string) error {
 	switch text {
+	case kbdCreate:
+		err := p.storage.ChangeState(username, storage.PickCreate)
+		if err != nil {
+			return err
+		}
+
+		return p.sendPickDefaultKeyboard(chatID, msgPickCreate)
+	default:
+		return p.sendUnknownMessage(chatID)
+	}
+}
+
+func (p *Processor) handlePickCreate(text string, chatID int, username string) error {
+	switch text {
 	case kbdCreateGroup:
 		err := p.storage.ChangeState(username, storage.CreateGroup)
 		if err != nil {
 			return err
 		}
+
 		return p.sendCreateGroup(chatID)
+	case kbdCreateExercise:
+		return nil
+	case kbdCancel:
+		err := p.storage.ChangeState(username, storage.Standard)
+		if err != nil {
+			return err
+		}
+
+		return p.sendDefaultKeyboard(chatID, msgCancel)
 	default:
 		return p.sendUnknownMessage(chatID)
 	}
@@ -45,11 +71,20 @@ func (p *Processor) handleCrateGroupState(text string, chatID int, username stri
 		return err
 	}
 
-	if err := p.sendCreateGroupSuccess(chatID, text); err != nil {
+	text = fmt.Sprintf(`Группа "%s" создана`, text)
+	if err := p.sendDefaultKeyboard(chatID, text); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (p *Processor) sendPickCreate(chatID int) error {
+	return p.client.SendMessage(chatID, msgPickCreate)
+}
+
+func (p *Processor) sendCancel(chatID int) error {
+	return p.client.SendMessage(chatID, msgCancel)
 }
 
 func (p *Processor) sendCreateGroup(chatID int) error {

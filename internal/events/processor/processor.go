@@ -45,6 +45,14 @@ func (p *Processor) processMessage(event events.Event) error {
 	text := strings.TrimSpace(meta.Text)
 	username := meta.Username
 
+	exist, err := p.storage.UserIsExists(username)
+	if err != nil {
+		return fmt.Errorf("can't process message: %w", err)
+	}
+	if !exist {
+		return p.storage.CreateUser(username)
+	}
+
 	if text[0] == '/' {
 		if err = p.doCmd(text, chatID, username); err != nil {
 			return fmt.Errorf("can't do command: %w", err)
@@ -64,4 +72,8 @@ func messageMeta(event events.Event) (*events.MessageMeta, error) {
 		return nil, fmt.Errorf("can't get meta: %w", ErrUnknownMetaType)
 	}
 	return &res, nil
+}
+
+func (p *Processor) sendUserDoesNotExists(chatID int) error {
+	return p.client.SendMessage(chatID, msgUserDoesNotExist)
 }

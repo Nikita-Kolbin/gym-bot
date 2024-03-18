@@ -28,7 +28,7 @@ func main() {
 	if err != nil {
 		log.Fatal("can't open storage", err)
 	}
-	if storage.Init() != nil {
+	if err = storage.Init(); err != nil {
 		log.Fatal("can't init storage", err)
 	}
 

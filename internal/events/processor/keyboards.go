@@ -6,13 +6,17 @@ import (
 )
 
 const (
-	kbdCreateGroup = "Создать группу"
+	kbdCreate         = "Создать"
+	kbdCreateGroup    = "Создать группу"
+	kbdCreateExercise = "Создать упражнение"
+
+	kbdCancel = "Отмена"
 )
 
-func (p *Processor) sendDefaultKeyboard(chatID int) error {
+func (p *Processor) sendDefaultKeyboard(chatID int, text string) error {
 	k := client.ReplyKeyboardMarkup{Keyboard: make([][]client.KeyboardButton, 0)}
 	k.Keyboard = append(k.Keyboard, []client.KeyboardButton{
-		{Text: kbdCreateGroup},
+		{Text: kbdCreate},
 	})
 	k.Keyboard = append(k.Keyboard, []client.KeyboardButton{
 		{Text: "Button 2"},
@@ -21,9 +25,28 @@ func (p *Processor) sendDefaultKeyboard(chatID int) error {
 		{Text: "Button 3"},
 	})
 
-	jkey, _ := json.Marshal(k)
+	jKey, _ := json.Marshal(k)
 
 	// TODO: do refactor
 
-	return p.client.SendReplyKeyboardMarkup(chatID, string(jkey))
+	return p.client.SendReplyKeyboardMarkup(chatID, string(jKey), text)
+}
+
+func (p *Processor) sendPickDefaultKeyboard(chatID int, text string) error {
+	k := client.ReplyKeyboardMarkup{Keyboard: make([][]client.KeyboardButton, 0)}
+	k.Keyboard = append(k.Keyboard, []client.KeyboardButton{
+		{Text: kbdCreateGroup},
+	})
+	k.Keyboard = append(k.Keyboard, []client.KeyboardButton{
+		{Text: kbdCreateExercise},
+	})
+	k.Keyboard = append(k.Keyboard, []client.KeyboardButton{
+		{Text: kbdCancel},
+	})
+
+	jKey, _ := json.Marshal(k)
+
+	// TODO: do refactor
+
+	return p.client.SendReplyKeyboardMarkup(chatID, string(jKey), text)
 }

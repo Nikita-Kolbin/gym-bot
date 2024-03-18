@@ -30,3 +30,14 @@ func (s *Storage) GroupIsExists(username, groupName string) (bool, error) {
 
 	return count > 0, nil
 }
+
+func (s *Storage) CheckGroupID(username string, groupName string) (int, error) {
+	q := `SELECT id FROM groups WHERE username = ? AND group_name = ?`
+
+	var id int
+	if err := s.db.QueryRow(q, username, groupName).Scan(&id); err != nil {
+		return 0, fmt.Errorf("can't check group id: %w", err)
+	}
+
+	return id, nil
+}
